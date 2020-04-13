@@ -38,7 +38,7 @@ def tweeter():
         print("Error during authentication")
 
     # Récupération des données
-    with open ('revo.csv', 'r') as file:
+    with open ('/Users/alexandrebartz/PycharmProjects/Bot/revo.csv', 'r') as file:
         liste_revo = list(csv.reader(file))
         revolutionnaire = random.choice(liste_revo)
         nom = revolutionnaire[0]
@@ -47,7 +47,7 @@ def tweeter():
         uploaded = api.media_upload(filename= portrait.name)
 
     # Publication du tweet
-    api.update_status(status="Notre révolutionnaire du jour est " + nom + " #Révolution #Revobot",
+    api.update_status(status="Notre révolutionnaire du jour est " + nom + " #Révolution #BotRevolution",
                           media_ids=[uploaded.media_id])
     portrait.close()
 
