@@ -1,3 +1,4 @@
+# Librairies importées pour la bonne exécution de la fonction
 import tweepy
 import random
 import csv
@@ -5,13 +6,19 @@ import tempfile
 import requests
 import mimetypes
 
+# Fichier contenant les données permettant de se connecter à l'API de Twitter
 from auth import *
 
 # Fonctions
 
 
 def telechargement_image(url):
-    "Fonction qui permet d'ouvrir une image"
+    """
+    Fonction qui permet de télécharger et d'ouvrir une image à partir d'un url
+    :param url: url extrait de Wikidata
+    :return: image ouverte
+    """
+
     response = requests.get(url)
     content_type = response.headers['content-type']
     extension = mimetypes.guess_extension(content_type)
@@ -22,7 +29,10 @@ def telechargement_image(url):
 
 
 def tweeter():
-    "Fonction qui permet de tweeter un message"
+    """
+    Fonction qui permet de tweeter le nom, le portrait et le lien Wikipédia d'un.e des révolutionnaires
+    choisi.e au hasard
+    """
 
     # Authentification à Twitter
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
@@ -37,22 +47,24 @@ def tweeter():
     except:
         print("Error during authentication")
 
-    # Récupération des données
-    with open ('/Users/alexandrebartz/PycharmProjects/Bot/revo.csv', 'r') as file:
+    # Récupération des données issues du fichier csv
+    with open ('/Users/alexandrebartz/PycharmProjects/Bot/Revolutionnaires.csv', 'r') as file:
         liste_revo = list(csv.reader(file))
         revolutionnaire = random.choice(liste_revo)
         nom = revolutionnaire[0]
-        url = revolutionnaire[1]
-        portrait = telechargement_image(url)
+        url_image = revolutionnaire[1]
+        url_wikipedia = revolutionnaire[2]
+        portrait = telechargement_image(url_image)
         uploaded = api.media_upload(filename= portrait.name)
 
     # Publication du tweet
-    api.update_status(status="Notre révolutionnaire du jour est " + nom + " #Révolution #BotRevolution",
-                          media_ids=[uploaded.media_id])
+    api.update_status(status="Notre révolutionnaire du jour est " + nom + ". Cliquez sur ce lien pour en savoir plus : "
+                    + url_wikipedia + " #wikidata #BotRevolution", media_ids=[uploaded.media_id])
+
     portrait.close()
 
 
-# Publication du tweet
+# Lancement de la fonction
 
 if __name__ == "__main__":
     tweeter()
